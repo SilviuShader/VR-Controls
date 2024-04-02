@@ -1,10 +1,8 @@
-using System;
-using UnityEditor.SearchService;
 using UnityEngine;
 using Valve.VR;
 
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerMovement : MonoBehaviour
+public class CircularContinuousMovement : MonoBehaviour
 {
     private const float                  DIST_BETWEEN_SURFACE_SAMPLES = 0.1f;
 
