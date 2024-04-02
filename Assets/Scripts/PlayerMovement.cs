@@ -1,30 +1,32 @@
+using System;
+using UnityEditor.SearchService;
 using UnityEngine;
 using Valve.VR;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
+    private const float                  DIST_BETWEEN_SURFACE_SAMPLES = 0.1f;
+
     [SerializeField]
-    private SteamVR_Action_Vector2 _moveAction          = SteamVR_Input.GetVector2Action("Move");
-    [SerializeField]                                    
-    private Transform              _inputSpace          = default;
-    [SerializeField]
-    private Transform              _rotateTransform     = default;
-    [SerializeField]                                    
-    private float                  _maxSpeed            = 10.0f;
-    [SerializeField]                                    
-    private float                  _maxAcceleration     = 10.0f;
-    [SerializeField]
-    private LayerMask              _layerMask         = -1;
-    [SerializeField]
-    private float                  _maxRaycastDistance  = 1000.0f;
-                                                        
-    private Vector2                _inputAxis           = Vector2.zero;
-    //private Vector2                _desiredVelocity     = Vector3.zero;
-    //private Vector2                _velocity            = Vector3.zero;
-    private Rigidbody              _rigidbody;
-    
-    private Vector2                _currentBodyPosition = Vector3.zero;
+    private       SteamVR_Action_Vector2 _moveAction                  = SteamVR_Input.GetVector2Action("Move");
+    [SerializeField]                                                  
+    private       Transform              _inputSpace                  = default;
+    [SerializeField]                                                  
+    private       Transform              _rotateTransform             = default;
+    [SerializeField]                                                  
+    private       float                  _maxSpeed                    = 10.0f;
+    [SerializeField]                                                  
+    private       float                  _maxAcceleration             = 10.0f;
+    [SerializeField]                                                  
+    private       LayerMask              _layerMask                   = -1;
+    [SerializeField]                                                  
+    private       float                  _maxRaycastDistance          = 1000.0f;
+                                                                      
+    private       Rigidbody              _rigidbody;                  
+                                                                      
+    private       Vector2                _currentBodyPosition         = Vector3.zero;
+    private       float                  _deltaAngle;
 
     private void Awake()
     {
@@ -35,13 +37,10 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         var inputSpace = transform;
-        var rotateTransform = transform;
         if (_inputSpace)
             inputSpace = _inputSpace;
-        if (_rotateTransform)
-            rotateTransform = _rotateTransform;
-
-        _inputAxis = Vector2.ClampMagnitude(_moveAction[SteamVR_Input_Sources.RightHand].axis, 1.0f);
+        
+        var inputAxis = Vector2.ClampMagnitude(_moveAction[SteamVR_Input_Sources.RightHand].axis, 1.0f);
 
         var forward = inputSpace.forward;
         forward.y = 0f;
@@ -51,43 +50,42 @@ public class PlayerMovement : MonoBehaviour
         right.y = 0f;
         right.Normalize();
 
-        var displacement = Vector2.zero;
+        Vector2 displacement;
         var deltaAngle = 0.0f;
         var displacementMagnitude = _maxSpeed * Time.deltaTime;
 
+        _currentBodyPosition = ProjectXZ(_rigidbody.position);
+
         if (RaycastReferenceObject(inputSpace.position, forward, out var targetPoint))
-        //if (Physics.Raycast(inputSpace.position, forward, out var hitInfo, _maxRaycastDistance, _layerMask))
         {
-            //var targetPoint = hitInfo.point;
-
-            //RaycastReferenceObject(inputSpace.position, forward);
-
             CurvatureDisplacement(
-                new Vector2(targetPoint.x, targetPoint.z),
+                ProjectXZ(targetPoint),
                 _currentBodyPosition,
                 displacementMagnitude,
-                _inputAxis.x,
-                _inputAxis.y,
+                inputAxis.x,
+                inputAxis.y,
                 out displacement,
                 out deltaAngle);
         }
         else
         {
-            displacement = (new Vector2(right.x, right.z) * _inputAxis.x + new Vector2(forward.x, forward.z) * _inputAxis.y) * displacementMagnitude;
+            displacement = (ProjectXZ(right) * inputAxis.x + ProjectXZ(forward) * inputAxis.y) * displacementMagnitude;
         }
 
-        //_desiredVelocity = (_inputAxis.x * new Vector2(right.x, right.z) + _inputAxis.y * new Vector2(forward.x, forward.z)) * _maxSpeed;
-        //var maxSpeedChange = _maxAcceleration * Time.deltaTime;
-        //_velocity = Vector3.MoveTowards(_velocity, _desiredVelocity, maxSpeedChange);
-
         _currentBodyPosition += displacement;
-
-        rotateTransform.Rotate(Vector3.up, -deltaAngle);
-        _rigidbody.MovePosition(new Vector3(_currentBodyPosition.x, 0.0f, _currentBodyPosition.y));
+        _deltaAngle += deltaAngle;
     }
 
-    //private void FixedUpdate() =>
-    //    _currentBodyPosition = _rigidbody.position; // TODO: Use vec2
+    private void FixedUpdate()
+    {
+        var rotateTransform = transform;
+        if (_rotateTransform)
+            rotateTransform = _rotateTransform;
+        
+        _rigidbody.MovePosition(UnProjectXZ(_currentBodyPosition, _rigidbody.position.y));
+        rotateTransform.Rotate(Vector3.up, -_deltaAngle);
+        _deltaAngle = 0.0f;
+    }
 
     private void CurvatureDisplacement(
         Vector2 center, 
@@ -116,12 +114,10 @@ public class PlayerMovement : MonoBehaviour
     private bool RaycastReferenceObject(Vector3 position, Vector3 forward, out Vector3 center)
     {
         center = Vector3.zero;
-        var deltaAngle = 1.0f; // TODO: Proper math here
         if (Physics.Raycast(position, forward, out var hitInfo, _maxRaycastDistance, _layerMask))
         {
-            
-            var forward1 = Quaternion.AngleAxis(-deltaAngle / hitInfo.distance, Vector3.up) * forward;
-            var forward2 = Quaternion.AngleAxis(deltaAngle / hitInfo.distance, Vector3.up) * forward;
+            var forward1 = Quaternion.AngleAxis(-Mathf.Atan(DIST_BETWEEN_SURFACE_SAMPLES / hitInfo.distance) * Mathf.Rad2Deg, Vector3.up) * forward;
+            var forward2 = Quaternion.AngleAxis(Mathf.Atan(DIST_BETWEEN_SURFACE_SAMPLES / hitInfo.distance) * Mathf.Rad2Deg, Vector3.up) * forward;
 
             if (Physics.Raycast(position, forward1, out var hitInfo1, _maxRaycastDistance, _layerMask) &&
                 Physics.Raycast(position, forward2, out var hitInfo2, _maxRaycastDistance, _layerMask))
@@ -163,4 +159,6 @@ public class PlayerMovement : MonoBehaviour
         radius = (c - p1).magnitude;
     }
 
+    private static Vector2 ProjectXZ(Vector3 vec) => new(vec.x, vec.z);
+    private static Vector3 UnProjectXZ(Vector2 vec, float y) => new(vec.x, y, vec.y);
 }
