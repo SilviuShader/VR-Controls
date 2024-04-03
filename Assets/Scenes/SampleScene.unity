@@ -1071,6 +1071,9 @@ MonoBehaviour:
   _teleportLayerMask:
     serializedVersion: 2
     m_Bits: 128
+  _targetIndicatorPrefab: {fileID: 524435911719708587, guid: 7ac33371dd6c3064e829d450bc1f1264,
+    type: 3}
+  _arcMaterial: {fileID: 2100000, guid: 53304d6d9f9111344bd6b9ec384fce59, type: 2}
 --- !u!1 &1456302173
 GameObject:
   m_ObjectHideFlags: 0
