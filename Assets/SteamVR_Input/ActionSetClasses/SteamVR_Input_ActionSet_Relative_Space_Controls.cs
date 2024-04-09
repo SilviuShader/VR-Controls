@@ -24,5 +24,13 @@ namespace Valve.VR
                 return SteamVR_Actions.relative_Space_Controls_Move;
             }
         }
+        
+        public virtual SteamVR_Action_Boolean Teleport
+        {
+            get
+            {
+                return SteamVR_Actions.relative_Space_Controls_Teleport;
+            }
+        }
     }
 }

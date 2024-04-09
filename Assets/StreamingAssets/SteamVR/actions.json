@@ -86,6 +86,11 @@
       "name": "/actions/Relative_Space_Controls/in/Move",
       "type": "vector2",
       "requirement": "mandatory"
+    },
+    {
+      "name": "/actions/Relative_Space_Controls/in/Teleport",
+      "type": "boolean",
+      "requirement": "mandatory"
     }
   ],
   "action_sets": [

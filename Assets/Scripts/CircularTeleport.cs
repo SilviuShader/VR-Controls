@@ -1,32 +1,39 @@
 using UnityEngine;
+using Valve.VR;
 
+[RequireComponent(typeof(Rigidbody))]
 public class CircularTeleport : MonoBehaviour
 {
-    private const float          FLOOR_BIAS             = 0.01f;
-                                                        
+    private const float                  FLOOR_BIAS             = 0.01f;
+
+    [SerializeField]
+    private       SteamVR_Action_Boolean _teleportAction        = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Teleport");
     [SerializeField]                                    
-    private       bool           _useGravity            = true;
-    [SerializeField]                                    
-    private       Transform      _rightHand             = default;
-    [SerializeField]                                    
-    private       float          _teleportDistance      = 10.0f;
-    [SerializeField]                                    
-    private       float          _arcDuration           = 3.0f;
-    [SerializeField]                                    
-    private       int            _segmentsCount         = 60;
-    [SerializeField]                                    
-    private       LayerMask      _teleportLayerMask     = -1;
-    [SerializeField]             
-    private       Transform      _targetIndicatorPrefab = default;
-    [SerializeField]             
-    private       Material       _arcMaterial;
-                                 
-    private       float          _scale                 = 1.0f;
-    private       Transform      _targetIndicator;
-    private       LineRenderer[] _lineRenderers         = null;
+    private       bool                   _useGravity            = true;
+    [SerializeField]                                            
+    private       Transform              _rightHand             = default;
+    [SerializeField]                                            
+    private       float                  _teleportDistance      = 10.0f;
+    [SerializeField]                                            
+    private       float                  _arcDuration           = 3.0f;
+    [SerializeField]                                            
+    private       int                    _segmentsCount         = 60;
+    [SerializeField]                                            
+    private       LayerMask              _teleportLayerMask     = -1;
+    [SerializeField]                     
+    private       Transform              _targetIndicatorPrefab = default;
+    [SerializeField]                     
+    private       Material               _arcMaterial;
+                                         
+    private       float                  _scale                 = 1.0f;
+    private       Transform              _targetIndicator       = null;
+    private       LineRenderer[]         _lineRenderers         = null;
+    private       Rigidbody              _rigidbody             = null;
 
     private void Awake()
     {
+        _rigidbody = GetComponent<Rigidbody>();
+
         _targetIndicator = Instantiate(_targetIndicatorPrefab);
         _targetIndicator.gameObject.SetActive(false);
 
@@ -50,17 +57,24 @@ public class CircularTeleport : MonoBehaviour
     {
         _scale = transform.lossyScale.x;
 
-        DrawArc();
+        if (_teleportAction.GetState(SteamVR_Input_Sources.RightHand))
+        {
+            DrawArc();
+        }
+        else
+        {
+            HideArc();
+            if (_teleportAction.GetStateUp(SteamVR_Input_Sources.RightHand))
+                TryTeleport();
+        }
     }
 
     private void DrawArc()
     {
-        var arcTime = FindProjectileCollision(out var hit);
+        var arcTime = FindProjectileCollision(out var _);
         if (arcTime == float.MaxValue)
         {
-            _targetIndicator.gameObject.SetActive(false);
-            foreach (var lineRenderer in _lineRenderers)
-                lineRenderer.gameObject.SetActive(false);
+            HideArc();
         }
         else
         {
@@ -80,6 +94,22 @@ public class CircularTeleport : MonoBehaviour
                 _lineRenderers[i].SetPosition(1, GetArcPositionAtTime(nextTime));
             }
         }
+    }
+
+    private void HideArc()
+    {
+        _targetIndicator.gameObject.SetActive(false);
+        foreach (var lineRenderer in _lineRenderers)
+            lineRenderer.gameObject.SetActive(false);
+    }
+
+    private void TryTeleport()
+    {
+        var arcTime = FindProjectileCollision(out var _);
+        if (arcTime == float.MaxValue)
+            return;
+        
+        _rigidbody.position = GetArcPositionAtTime(arcTime) + Vector3.up * FLOOR_BIAS;
     }
     
     private float FindProjectileCollision(out RaycastHit hitInfo)
