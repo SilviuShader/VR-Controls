@@ -142,7 +142,18 @@ public class CircularTeleport : MonoBehaviour
     private Vector3 GetArcPositionAtTime(float time)
     {
         var gravity = _useGravity ? Physics.gravity : Vector3.zero;
-        var arcPos = _rightHand.position + ((_rightHand.forward * _teleportDistance * time) + (0.5f * time * time) * gravity) * _scale;
+
+        var xzForward = MathHelper.ProjectXZ(_rightHand.forward); // TODO: make this relative to player view (dot products)
+
+        var position = _rightHand.position;
+        var displacementMagnitude = _teleportDistance * time;
+        // TODO: Replace center
+        // TODO: Replace curvature factor, forward factor
+        Vector2 xzDisplacement;
+        float rotationAngle; // TODO: Use this to rotate player
+        Curvature.CurvatureDisplacement(Vector2.zero, MathHelper.ProjectXZ(position), displacementMagnitude, xzForward.x, xzForward.y, out xzDisplacement, out rotationAngle); 
+        
+        var arcPos = position + (Vector3.up * (_rightHand.forward.y * _teleportDistance * time) + MathHelper.UnProjectXZ(xzDisplacement, 0.0f) + (0.5f * time * time) * gravity) * _scale;
         return arcPos;
     }
 }

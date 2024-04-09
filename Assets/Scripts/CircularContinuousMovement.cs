@@ -52,12 +52,12 @@ public class CircularContinuousMovement : MonoBehaviour
         var deltaAngle = 0.0f;
         var displacementMagnitude = _maxSpeed * Time.deltaTime;
 
-        _currentBodyPosition = ProjectXZ(_rigidbody.position);
+        _currentBodyPosition = MathHelper.ProjectXZ(_rigidbody.position);
 
         if (RaycastReferenceObject(inputSpace.position, forward, out var targetPoint))
         {
-            CurvatureDisplacement(
-                ProjectXZ(targetPoint),
+            Curvature.CurvatureDisplacement(
+                MathHelper.ProjectXZ(targetPoint),
                 _currentBodyPosition,
                 displacementMagnitude,
                 inputAxis.x,
@@ -67,7 +67,7 @@ public class CircularContinuousMovement : MonoBehaviour
         }
         else
         {
-            displacement = (ProjectXZ(right) * inputAxis.x + ProjectXZ(forward) * inputAxis.y) * displacementMagnitude;
+            displacement = (MathHelper.ProjectXZ(right) * inputAxis.x + MathHelper.ProjectXZ(forward) * inputAxis.y) * displacementMagnitude;
         }
 
         _currentBodyPosition += displacement;
@@ -80,33 +80,9 @@ public class CircularContinuousMovement : MonoBehaviour
         if (_rotateTransform)
             rotateTransform = _rotateTransform;
         
-        _rigidbody.MovePosition(UnProjectXZ(_currentBodyPosition, _rigidbody.position.y));
+        _rigidbody.MovePosition(MathHelper.UnProjectXZ(_currentBodyPosition, _rigidbody.position.y));
         rotateTransform.Rotate(Vector3.up, -_deltaAngle);
         _deltaAngle = 0.0f;
-    }
-
-    private void CurvatureDisplacement(
-        Vector2 center, 
-        Vector2 position, 
-        float movementMagnitude, 
-        float curvatureFactor, 
-        float forwardFactor,
-        out Vector2 displacement, out float rotationAngle)
-    {
-        var fromCenter = position - center;
-        var radius = fromCenter.magnitude;
-        
-        var angle = (movementMagnitude / radius) * curvatureFactor;
-
-        rotationAngle = angle * Mathf.Rad2Deg;
-        fromCenter = Quaternion.AngleAxis(rotationAngle, Vector3.forward) * fromCenter;
-
-        var rotatedPosition = center + fromCenter;
-
-        var greatCircleDist = angle * radius;
-        var remainingDist = Mathf.Clamp(movementMagnitude - greatCircleDist, 0.0f, movementMagnitude);
-
-        displacement = (rotatedPosition - remainingDist * fromCenter.normalized * forwardFactor) - position;
     }
 
     private bool RaycastReferenceObject(Vector3 position, Vector3 forward, out Vector3 center)
@@ -156,7 +132,4 @@ public class CircularContinuousMovement : MonoBehaviour
 
         radius = (c - p1).magnitude;
     }
-
-    private static Vector2 ProjectXZ(Vector3 vec) => new(vec.x, vec.z);
-    private static Vector3 UnProjectXZ(Vector2 vec, float y) => new(vec.x, y, vec.y);
 }
