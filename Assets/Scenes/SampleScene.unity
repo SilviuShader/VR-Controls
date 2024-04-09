@@ -1035,22 +1035,22 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1266731790}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e2ebc433796d9749a6dfae72c0fa8fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  InputSpace: {fileID: 2110770201}
+  RotateTransform: {fileID: 1579602061}
+  TargetsLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  MaxRaycastDistance: 1000
   _moveAction:
     actionPath: /actions/Relative_Space_Controls/in/Move
     needsReinit: 0
-  _inputSpace: {fileID: 2110770201}
-  _rotateTransform: {fileID: 1579602061}
   _maxSpeed: 10
   _maxAcceleration: 100
-  _layerMask:
-    serializedVersion: 2
-    m_Bits: 19
-  _maxRaycastDistance: 1000
 --- !u!114 &1266731794
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1063,6 +1063,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a412ab3341885224e84f92bdcf49ea44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  InputSpace: {fileID: 2110770201}
+  RotateTransform: {fileID: 1579602061}
+  TargetsLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  MaxRaycastDistance: 1000
+  _teleportAction:
+    actionPath: /actions/Relative_Space_Controls/in/Teleport
+    needsReinit: 0
   _useGravity: 1
   _rightHand: {fileID: 1456302174}
   _teleportDistance: 10
@@ -1074,6 +1083,8 @@ MonoBehaviour:
   _targetIndicatorPrefab: {fileID: 524435911719708587, guid: 7ac33371dd6c3064e829d450bc1f1264,
     type: 3}
   _arcMaterial: {fileID: 2100000, guid: 53304d6d9f9111344bd6b9ec384fce59, type: 2}
+  _timeToChangeTargetState: 0.5
+  _curvature: 0.25
 --- !u!1 &1456302173
 GameObject:
   m_ObjectHideFlags: 0
