@@ -138,8 +138,15 @@ public class CircularTeleport : MovementMethod
         if (arcTime == float.MaxValue)
             return;
 
-        _rigidbody.position = GetArcPositionAtTime(arcTime, out var deltaRotation) + Vector3.up * FLOOR_BIAS;
-        _rigidbody.rotation *= Quaternion.Euler(0.0f, deltaRotation, 0.0f); // TODO: This rotation is not good enough (should be looking at the object)
+        var oldPlanePosition = MathHelper.ProjectXZ(_rigidbody.position);
+
+        _rigidbody.position = GetArcPositionAtTime(arcTime, out _) + Vector3.up * FLOOR_BIAS;
+        if (_gotLookingTarget)
+        {
+            var lookTargetPlanePosition = MathHelper.ProjectXZ(_lookingTargetPosition);
+            var currentPlanePosition = MathHelper.ProjectXZ(_rigidbody.position);
+            GetRotateTransform().Rotate(Vector3.up, -Vector2.SignedAngle(oldPlanePosition - lookTargetPlanePosition, currentPlanePosition - lookTargetPlanePosition));
+        }
         // TODO: Also implement the ability to rotate via the opposite controller.s
     }
     

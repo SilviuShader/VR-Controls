@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class MovementMethod : MonoBehaviour
 {
-    private const float     DIST_BETWEEN_SURFACE_SAMPLES = 0.1f;
+    private const float     DIST_BETWEEN_SURFACE_SAMPLES = 0.01f;
 
     public        Transform InputSpace         = default;
     public        Transform RotateTransform    = default;
