@@ -27,8 +27,9 @@ public class CircularTeleport : MovementMethod
     [SerializeField]
     private       float                  _timeToChangeTargetState = 1.0f;
     [SerializeField]
-    private       float                  _curvature               = 0.5f;
+    private       float                  _maxCurvature             = 0.5f;
                                          
+    private       float                  _currentCurvature        = 0.0f;
     private       float                  _scale                   = 1.0f;
     private       Transform              _targetIndicator         = null;
     private       LineRenderer[]         _lineRenderers           = null;
@@ -71,9 +72,10 @@ public class CircularTeleport : MovementMethod
         if (_accumulatedStateTime >= _timeToChangeTargetState)
             _accumulatedStateTime = _timeToChangeTargetState;
 
-        if (RaycastReferenceObject(inputSpace.position, forward, out var targetPoint))
+        if (RaycastReferenceObject(inputSpace.position, forward, out var targetPoint, out var curvature))
         {
-            _lookingTargetPosition = targetPoint;
+            _currentCurvature = _maxCurvature * curvature;
+            _lookingTargetPosition = targetPoint; // TODO: Move towards this if the target was changed
  
             if (!_gotLookingTarget)
                 _accumulatedStateTime = _timeToChangeTargetState - _accumulatedStateTime;
@@ -145,7 +147,9 @@ public class CircularTeleport : MovementMethod
         {
             var lookTargetPlanePosition = MathHelper.ProjectXZ(_lookingTargetPosition);
             var currentPlanePosition = MathHelper.ProjectXZ(_rigidbody.position);
-            GetRotateTransform().Rotate(Vector3.up, -Vector2.SignedAngle(oldPlanePosition - lookTargetPlanePosition, currentPlanePosition - lookTargetPlanePosition));
+            GetRotateTransform().Rotate(
+                Vector3.up, 
+                -Vector2.SignedAngle(oldPlanePosition - lookTargetPlanePosition, currentPlanePosition - lookTargetPlanePosition));
         }
         // TODO: Also implement the ability to rotate via the opposite controller.s
     }
@@ -211,12 +215,15 @@ public class CircularTeleport : MovementMethod
 
         var t = (_gotLookingTarget
             ? (_accumulatedStateTime / _timeToChangeTargetState)
-            : 1.0f - (_accumulatedStateTime / _timeToChangeTargetState)) * _curvature;
+            : 1.0f - (_accumulatedStateTime / _timeToChangeTargetState)) * _currentCurvature;
 
-        var forwardInTime = Vector3.Slerp(
-            straightForwardInTime, 
-            curvedForwardInTime,
-            t);
+        //var forwardInTime = Vector3.Slerp(
+        //    straightForwardInTime, 
+        //    curvedForwardInTime,
+        //    t);
+
+        var lengthInTime = Mathf.Lerp(straightForwardInTime.magnitude, curvedForwardInTime.magnitude, t);
+        var forwardInTime = (Quaternion.Euler(0.0f, t * displacedRotation, 0.0f) * straightForwardInTime).normalized * lengthInTime;
 
         deltaRotation = displacedRotation * t;
 

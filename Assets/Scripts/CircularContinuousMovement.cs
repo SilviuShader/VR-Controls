@@ -30,13 +30,15 @@ public class CircularContinuousMovement : MovementMethod
         var forward = InputSpaceForwardXZ();
         var right = InputSpaceRightXZ();
 
-        Vector2 displacement;
         var deltaAngle = 0.0f;
         var displacementMagnitude = _maxSpeed * Time.deltaTime;
 
         _currentBodyPosition = MathHelper.ProjectXZ(_rigidbody.position);
 
-        if (RaycastReferenceObject(inputSpace.position, forward, out var targetPoint))
+        var straightDisplacement = (MathHelper.ProjectXZ(right) * inputAxis.x + MathHelper.ProjectXZ(forward) * inputAxis.y) * displacementMagnitude; ;
+        var curvedDisplacement = straightDisplacement;
+
+        if (RaycastReferenceObject(inputSpace.position, forward, out var targetPoint, out var curvature))
         {
             Curvature.CurvatureDisplacement(
                 MathHelper.ProjectXZ(targetPoint),
@@ -44,13 +46,11 @@ public class CircularContinuousMovement : MovementMethod
                 displacementMagnitude,
                 inputAxis.x,
                 inputAxis.y,
-                out displacement,
+                out curvedDisplacement,
                 out deltaAngle);
         }
-        else
-        {
-            displacement = (MathHelper.ProjectXZ(right) * inputAxis.x + MathHelper.ProjectXZ(forward) * inputAxis.y) * displacementMagnitude;
-        }
+
+        var displacement = MathHelper.ProjectXZ(Vector3.Slerp(MathHelper.UnProjectXZ(straightDisplacement, 0.0f), MathHelper.UnProjectXZ(curvedDisplacement, 0.0f), curvature));
 
         _currentBodyPosition += displacement;
         _deltaAngle += deltaAngle;
