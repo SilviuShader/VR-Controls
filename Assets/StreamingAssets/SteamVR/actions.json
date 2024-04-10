@@ -91,6 +91,14 @@
       "name": "/actions/Relative_Space_Controls/in/Teleport",
       "type": "boolean",
       "requirement": "mandatory"
+    },
+    {
+      "name": "/actions/Relative_Space_Controls/in/TurnLeft",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/Relative_Space_Controls/in/TurnRight",
+      "type": "boolean"
     }
   ],
   "action_sets": [

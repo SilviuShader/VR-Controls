@@ -59,6 +59,10 @@ namespace Valve.VR
         
         private static SteamVR_Action_Boolean p_relative_Space_Controls_Teleport;
         
+        private static SteamVR_Action_Boolean p_relative_Space_Controls_TurnLeft;
+        
+        private static SteamVR_Action_Boolean p_relative_Space_Controls_TurnRight;
+        
         public static SteamVR_Action_Boolean default_InteractUI
         {
             get
@@ -227,6 +231,22 @@ namespace Valve.VR
             }
         }
         
+        public static SteamVR_Action_Boolean relative_Space_Controls_TurnLeft
+        {
+            get
+            {
+                return SteamVR_Actions.p_relative_Space_Controls_TurnLeft.GetCopy<SteamVR_Action_Boolean>();
+            }
+        }
+        
+        public static SteamVR_Action_Boolean relative_Space_Controls_TurnRight
+        {
+            get
+            {
+                return SteamVR_Actions.p_relative_Space_Controls_TurnRight.GetCopy<SteamVR_Action_Boolean>();
+            }
+        }
+        
         private static void InitializeActionArrays()
         {
             Valve.VR.SteamVR_Input.actions = new Valve.VR.SteamVR_Action[] {
@@ -250,7 +270,9 @@ namespace Valve.VR
                     SteamVR_Actions.buggy_Reset,
                     SteamVR_Actions.mixedreality_ExternalCamera,
                     SteamVR_Actions.relative_Space_Controls_Move,
-                    SteamVR_Actions.relative_Space_Controls_Teleport};
+                    SteamVR_Actions.relative_Space_Controls_Teleport,
+                    SteamVR_Actions.relative_Space_Controls_TurnLeft,
+                    SteamVR_Actions.relative_Space_Controls_TurnRight};
             Valve.VR.SteamVR_Input.actionsIn = new Valve.VR.ISteamVR_Action_In[] {
                     SteamVR_Actions.default_InteractUI,
                     SteamVR_Actions.default_Teleport,
@@ -271,7 +293,9 @@ namespace Valve.VR
                     SteamVR_Actions.buggy_Reset,
                     SteamVR_Actions.mixedreality_ExternalCamera,
                     SteamVR_Actions.relative_Space_Controls_Move,
-                    SteamVR_Actions.relative_Space_Controls_Teleport};
+                    SteamVR_Actions.relative_Space_Controls_Teleport,
+                    SteamVR_Actions.relative_Space_Controls_TurnLeft,
+                    SteamVR_Actions.relative_Space_Controls_TurnRight};
             Valve.VR.SteamVR_Input.actionsOut = new Valve.VR.ISteamVR_Action_Out[] {
                     SteamVR_Actions.default_Haptic};
             Valve.VR.SteamVR_Input.actionsVibration = new Valve.VR.SteamVR_Action_Vibration[] {
@@ -290,7 +314,9 @@ namespace Valve.VR
                     SteamVR_Actions.platformer_Jump,
                     SteamVR_Actions.buggy_Brake,
                     SteamVR_Actions.buggy_Reset,
-                    SteamVR_Actions.relative_Space_Controls_Teleport};
+                    SteamVR_Actions.relative_Space_Controls_Teleport,
+                    SteamVR_Actions.relative_Space_Controls_TurnLeft,
+                    SteamVR_Actions.relative_Space_Controls_TurnRight};
             Valve.VR.SteamVR_Input.actionsSingle = new Valve.VR.SteamVR_Action_Single[] {
                     SteamVR_Actions.default_Squeeze,
                     SteamVR_Actions.buggy_Throttle};
@@ -318,7 +344,9 @@ namespace Valve.VR
                     SteamVR_Actions.buggy_Brake,
                     SteamVR_Actions.buggy_Reset,
                     SteamVR_Actions.relative_Space_Controls_Move,
-                    SteamVR_Actions.relative_Space_Controls_Teleport};
+                    SteamVR_Actions.relative_Space_Controls_Teleport,
+                    SteamVR_Actions.relative_Space_Controls_TurnLeft,
+                    SteamVR_Actions.relative_Space_Controls_TurnRight};
         }
         
         private static void PreInitActions()
@@ -344,6 +372,8 @@ namespace Valve.VR
             SteamVR_Actions.p_mixedreality_ExternalCamera = ((SteamVR_Action_Pose)(SteamVR_Action.Create<SteamVR_Action_Pose>("/actions/mixedreality/in/ExternalCamera")));
             SteamVR_Actions.p_relative_Space_Controls_Move = ((SteamVR_Action_Vector2)(SteamVR_Action.Create<SteamVR_Action_Vector2>("/actions/Relative_Space_Controls/in/Move")));
             SteamVR_Actions.p_relative_Space_Controls_Teleport = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/Relative_Space_Controls/in/Teleport")));
+            SteamVR_Actions.p_relative_Space_Controls_TurnLeft = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/Relative_Space_Controls/in/TurnLeft")));
+            SteamVR_Actions.p_relative_Space_Controls_TurnRight = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/Relative_Space_Controls/in/TurnRight")));
         }
     }
 }

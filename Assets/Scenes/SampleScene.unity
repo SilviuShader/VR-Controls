@@ -310,6 +310,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63f01afc9e4ad794989241694e62305a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Radius: 1
 --- !u!1 &120703577
 GameObject:
   m_ObjectHideFlags: 0
@@ -733,6 +734,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63f01afc9e4ad794989241694e62305a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Radius: 1
 --- !u!1 &685034988
 GameObject:
   m_ObjectHideFlags: 0
@@ -1061,7 +1063,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1266731790}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e2ebc433796d9749a6dfae72c0fa8fd, type: 3}
   m_Name: 
@@ -1072,6 +1074,13 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   MaxRaycastDistance: 1000
+  TurnAngle: 15
+  _turnLeftAction:
+    actionPath: /actions/Relative_Space_Controls/in/TurnLeft
+    needsReinit: 1
+  _turnRightAction:
+    actionPath: /actions/Relative_Space_Controls/in/TurnRight
+    needsReinit: 0
   _moveAction:
     actionPath: /actions/Relative_Space_Controls/in/Move
     needsReinit: 0
@@ -1084,7 +1093,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1266731790}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a412ab3341885224e84f92bdcf49ea44, type: 3}
   m_Name: 
@@ -1095,6 +1104,13 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   MaxRaycastDistance: 1000
+  TurnAngle: 15
+  _turnLeftAction:
+    actionPath: /actions/Relative_Space_Controls/in/TurnLeft
+    needsReinit: 1
+  _turnRightAction:
+    actionPath: /actions/Relative_Space_Controls/in/TurnRight
+    needsReinit: 0
   _teleportAction:
     actionPath: /actions/Relative_Space_Controls/in/Teleport
     needsReinit: 0
@@ -1534,6 +1550,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63f01afc9e4ad794989241694e62305a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Radius: 1
 --- !u!1 &2110770200
 GameObject:
   m_ObjectHideFlags: 0

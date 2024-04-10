@@ -52,8 +52,10 @@ public class CircularContinuousMovement : MovementMethod
 
         var displacement = MathHelper.ProjectXZ(Vector3.Slerp(MathHelper.UnProjectXZ(straightDisplacement, 0.0f), MathHelper.UnProjectXZ(curvedDisplacement, 0.0f), curvature));
 
-        _currentBodyPosition += displacement;
+        _currentBodyPosition += displacement; // TODO: Somehow use velocity (and also fix NaNs)
         _deltaAngle += deltaAngle;
+
+        UpdateTurns();
     }
 
     private void FixedUpdate()

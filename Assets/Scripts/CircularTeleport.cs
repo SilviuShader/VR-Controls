@@ -98,6 +98,8 @@ public class CircularTeleport : MovementMethod
             if (_teleportAction.GetStateUp(SteamVR_Input_Sources.RightHand))
                 TryTeleport();
         }
+
+        UpdateTurns();
     }
 
     private void DrawArc()

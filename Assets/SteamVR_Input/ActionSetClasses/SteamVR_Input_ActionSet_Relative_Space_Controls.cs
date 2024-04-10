@@ -32,5 +32,21 @@ namespace Valve.VR
                 return SteamVR_Actions.relative_Space_Controls_Teleport;
             }
         }
+        
+        public virtual SteamVR_Action_Boolean TurnLeft
+        {
+            get
+            {
+                return SteamVR_Actions.relative_Space_Controls_TurnLeft;
+            }
+        }
+        
+        public virtual SteamVR_Action_Boolean TurnRight
+        {
+            get
+            {
+                return SteamVR_Actions.relative_Space_Controls_TurnRight;
+            }
+        }
     }
 }

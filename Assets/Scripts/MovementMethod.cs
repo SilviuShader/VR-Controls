@@ -1,14 +1,21 @@
 using UnityEngine;
+using Valve.VR;
 
 public class MovementMethod : MonoBehaviour
 {
-    private const float     DIST_BETWEEN_SURFACE_SAMPLES = 0.01f;
-    private const float     MAX_IN_RANGE_ANGLE           = 45.0f;
+    private const float                  MAX_IN_RANGE_ANGLE = 45.0f;
+                                         
+    public        Transform              InputSpace         = default;
+    public        Transform              RotateTransform    = default;
+    public        LayerMask              TargetsLayerMask   = -1;
+    public        float                  MaxRaycastDistance = 1000.0f;
+    [Range(1.0f, 90.0f)]
+    public        float                  TurnAngle          = 15.0f;
 
-    public        Transform InputSpace                   = default;
-    public        Transform RotateTransform              = default;
-    public        LayerMask TargetsLayerMask             = -1;
-    public        float     MaxRaycastDistance           = 1000.0f;
+    [SerializeField]
+    private       SteamVR_Action_Boolean _turnLeftAction    = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("TurnLeft");
+    [SerializeField]
+    private       SteamVR_Action_Boolean _turnRightAction   = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("TurnRight");
 
 
     public Transform GetInputSpace()      => InputSpace ? InputSpace : transform;
@@ -64,7 +71,16 @@ public class MovementMethod : MonoBehaviour
         return false;
     }
 
-    float CosineBetweenViewer(Vector3 viewerPos, Vector3 viewerForward, Vector3 objPos)
+    public void UpdateTurns()
+    {
+        if(_turnLeftAction.GetStateUp(SteamVR_Input_Sources.LeftHand))
+            GetRotateTransform().Rotate(0.0f, -TurnAngle, 0.0f);
+
+        if (_turnRightAction.GetStateUp(SteamVR_Input_Sources.LeftHand))
+            GetRotateTransform().Rotate(0.0f, TurnAngle, 0.0f);
+    }
+
+    private float CosineBetweenViewer(Vector3 viewerPos, Vector3 viewerForward, Vector3 objPos)
     {
         var direction = objPos - viewerPos;
         direction.y = 0;
@@ -75,21 +91,4 @@ public class MovementMethod : MonoBehaviour
 
         return Vector3.Dot(direction, viewerForward);
     }
-
-    //void Estimate3DCircle(Vector3 p1, Vector3 p2, Vector3 p3, out Vector3 c, out float radius)
-    //{
-    //    var v1 = p2 - p1;
-    //    var v2 = p3 - p1;
-    //    float v1v1, v2v2, v1v2;
-    //    v1v1 = Vector3.Dot(v1, v1);
-    //    v2v2 = Vector3.Dot(v2, v2);
-    //    v1v2 = Vector3.Dot(v1, v2);
-
-    //    float b = 0.5f / (v1v1 * v2v2 - v1v2 * v1v2);
-    //    float k1 = b * v2v2 * (v1v1 - v1v2);
-    //    float k2 = b * v1v1 * (v2v2 - v1v2);
-    //    c = p1 + v1 * k1 + v2 * k2; // center
-
-    //    radius = (c - p1).magnitude;
-    //}
 }
