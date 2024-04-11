@@ -3,8 +3,7 @@ using Valve.VR;
 
 public class MovementMethod : MonoBehaviour
 {
-    private const float                  MAX_IN_RANGE_ANGLE = 45.0f;
-                                         
+
     public        Transform              InputSpace         = default;
     public        Transform              RotateTransform    = default;
     public        LayerMask              TargetsLayerMask   = -1;
@@ -16,6 +15,8 @@ public class MovementMethod : MonoBehaviour
     private       SteamVR_Action_Boolean _turnLeftAction    = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("TurnLeft");
     [SerializeField]
     private       SteamVR_Action_Boolean _turnRightAction   = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("TurnRight");
+    [SerializeField, Range(1.0f, 90.0f)]
+    private       float                  _maxInRangeAngle   = 30.0f;
 
 
     public Transform GetInputSpace()      => InputSpace ? InputSpace : transform;
@@ -50,34 +51,60 @@ public class MovementMethod : MonoBehaviour
 
         var bestObject = interestObjects[0];
         var bestCosine = -1.0f;
+        var bestDistance = float.MaxValue;
+
+        var minCosine = Mathf.Cos(_maxInRangeAngle * Mathf.Deg2Rad);
 
         foreach (var obj in interestObjects)
         {
             var cosine = CosineBetweenViewer(position, forward, obj.transform.position);
-            if (bestCosine < cosine)
+
+            if (cosine < minCosine)
+                continue;
+
+            var distance =
+                Vector2.Dot(MathHelper.ProjectXZ(forward), MathHelper.ProjectXZ(obj.transform.position - position)) -
+                obj.Radius;
+            
+            if (distance < 0.0f)
+                distance = 0.0f;
+
+            if (bestDistance > distance)
             {
-                bestObject = obj;
-                bestCosine = cosine;
+                bestObject   = obj;
+                bestCosine   = cosine;
+                bestDistance = distance;
             }
         }
 
-        if (bestCosine >= Mathf.Cos(MAX_IN_RANGE_ANGLE * Mathf.Deg2Rad))
+        if (bestCosine >= minCosine)
         {
             center = bestObject.transform.position;
-            curvature = 1.0f - (Mathf.Acos(bestCosine) / (MAX_IN_RANGE_ANGLE * Mathf.Deg2Rad));
+            curvature = 1.0f - (Mathf.Acos(bestCosine) / (_maxInRangeAngle * Mathf.Deg2Rad));
             return true;
         }
 
         return false;
     }
 
-    public void UpdateTurns()
+    protected bool UpdateTurns()
     {
-        if(_turnLeftAction.GetStateUp(SteamVR_Input_Sources.LeftHand))
+        var result = false;
+
+        if (_turnLeftAction.GetStateUp(SteamVR_Input_Sources.LeftHand))
+        {
             GetRotateTransform().Rotate(0.0f, -TurnAngle, 0.0f);
+            result = true;
+        }
 
         if (_turnRightAction.GetStateUp(SteamVR_Input_Sources.LeftHand))
+        {
             GetRotateTransform().Rotate(0.0f, TurnAngle, 0.0f);
+            result = true;
+        }
+
+        return result;
+
     }
 
     private float CosineBetweenViewer(Vector3 viewerPos, Vector3 viewerForward, Vector3 objPos)

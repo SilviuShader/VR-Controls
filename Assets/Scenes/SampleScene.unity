@@ -1081,6 +1081,7 @@ MonoBehaviour:
   _turnRightAction:
     actionPath: /actions/Relative_Space_Controls/in/TurnRight
     needsReinit: 0
+  _maxInRangeAngle: 30
   _moveAction:
     actionPath: /actions/Relative_Space_Controls/in/Move
     needsReinit: 0
@@ -1111,6 +1112,7 @@ MonoBehaviour:
   _turnRightAction:
     actionPath: /actions/Relative_Space_Controls/in/TurnRight
     needsReinit: 0
+  _maxInRangeAngle: 45
   _teleportAction:
     actionPath: /actions/Relative_Space_Controls/in/Teleport
     needsReinit: 0

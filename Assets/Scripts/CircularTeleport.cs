@@ -62,6 +62,9 @@ public class CircularTeleport : MovementMethod
         }
     }
 
+    private void Start() =>
+        _rigidbody.constraints = RigidbodyConstraints.FreezePosition | _rigidbody.constraints;
+
     private void Update()
     {
         _scale = transform.lossyScale.x;
